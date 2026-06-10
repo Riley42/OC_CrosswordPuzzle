@@ -17,55 +17,24 @@ public class Clue
     public int getRow() {
         return row;
     }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
-
     public int getCol() {
         return col;
     }
-
-    public void setCol(int col) {
-        this.col = col;
-    }
-
     public int getNumber() {
         return number;
     }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public char getOrientation() {
         return orientation;
     }
-
-    public void setOrientation(char orientation) {
-        this.orientation = orientation;
-    }
-
     public String getClue() {
         return clue;
     }
-
-    public void setClue(String clue) {
-        this.clue = clue;
-    }
-
     public String getRealAnswer() {
         return realAnswer;
     }
-
-    public void setRealAnswer(String realAnswer) {
-        this.realAnswer = realAnswer;
-    }
-
     public String getSubmittedAnswer() {
         return submittedAnswer;
     }
-
     public void setSubmittedAnswer(String submittedAnswer) {
         this.submittedAnswer = submittedAnswer;
     }

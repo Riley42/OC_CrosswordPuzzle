@@ -25,7 +25,7 @@ public class Crossword
             for (int col = 0; col < cols; col++)
                 board[row][col] = new Square(Square.BLACK_SQUARE);
 
-        // Carve out the answer squares using each clue
+        // Fill possible answer squares
         for (Clue clue : clues)
         {
             int clueRow      = clue.getRow();
@@ -51,14 +51,13 @@ public class Crossword
             }
         }
     }
-
     public void displayBoard()
     {
-        for (int r = 0; r < rows; r++)
+        for (int row = 0; row < rows; row++)
         {
-            for (int c = 0; c < cols; c++)
+            for (int col = 0; col < cols; col++)
             {
-                System.out.printf("%4s", board[r][c].toString());
+                System.out.printf("%4s", board[row][col].toString()); // string at least 4 characters long
             }
             System.out.println();
         }
@@ -77,24 +76,44 @@ public class Crossword
             board[row][col].setContent(clue.getSubmittedAnswer().charAt(i));
         }
     }
-
-    public Square[][] getBoard()
+    public void eraseAnswer(Clue clue)
     {
-        return board;
+        for (int i = 0; i < clue.getRealAnswer().length(); i++)
+        {
+            int currentRow = (clue.getOrientation() == 'v') ? clue.getRow() + i : clue.getRow();
+            int currentCol = (clue.getOrientation() == 'h') ? clue.getCol() + i : clue.getCol();
+
+            boolean hasIntersection;
+
+            if (clue.getOrientation() == 'v')
+            {
+                hasIntersection = (currentCol > 0 && Character.isLetter(board[currentRow][currentCol - 1].getContent())) ||
+                                  (currentCol < board[0].length - 1 && Character.isLetter(board[currentRow][currentCol + 1].getContent()));
+            }
+            else
+            {
+                hasIntersection = (currentRow > 0 && Character.isLetter(board[currentRow - 1][currentCol].getContent())) ||
+                                  (currentRow < board.length - 1 && Character.isLetter(board[currentRow + 1][currentCol].getContent()));
+            }
+
+            if (!hasIntersection)
+            {
+                char content = (i == 0) ? Character.forDigit(clue.getNumber(), 10) : Square.EMPTY_SQUARE;
+                board[currentRow][currentCol].setContent(content);
+            }
+        }
     }
-
-    public ArrayList<Clue> getClues()
+    public boolean checkPuzzle()
     {
-        return clues;
-    }
+        for (Clue clue : clues)
+        {
+            if (clue.getSubmittedAnswer() == null ||
+               !clue.getSubmittedAnswer().equals(clue.getRealAnswer()))
+            {
+                return false;
+            }
+        }
 
-    public int getRows()
-    {
-        return rows;
-    }
-
-    public int getCols()
-    {
-        return cols;
+        return true;
     }
 }

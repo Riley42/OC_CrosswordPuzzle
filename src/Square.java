@@ -10,13 +10,11 @@ public class Square
         this.content    = EMPTY_SQUARE;
         this.clueNumber = 0;
     }
-
     public Square(char content)
     {
         this.content    = content;
         this.clueNumber = 0;
     }
-
     public Square(char content, int clueNumber)
     {
         this.content    = content;
@@ -31,15 +29,6 @@ public class Square
     {
         this.content = content;
     }
-    public int getClueNumber()
-    {
-        return clueNumber;
-    }
-    public void setClueNumber(int clueNumber)
-    {
-        this.clueNumber = clueNumber;
-    }
-
     public boolean isBlackSquare()
     {
         return content == BLACK_SQUARE;
