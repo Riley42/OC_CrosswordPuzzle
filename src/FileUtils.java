@@ -31,8 +31,8 @@ public class FileUtils
                     continue;
                 }
 
-                int row          = Integer.parseInt(parts[0].trim());
-                int col          = Integer.parseInt(parts[1].trim());
+                int row          = Integer.parseInt(parts[0].trim().toLowerCase());
+                int col          = Integer.parseInt(parts[1].trim().toLowerCase());
                 char orientation = parts[2].trim().charAt(0);
                 int number       = Integer.parseInt(parts[3].trim());
                 String answer    = parts[4].trim();

@@ -78,28 +78,32 @@ public class Crossword
     }
     public void eraseAnswer(Clue clue)
     {
+        int startingRow = clue.getRow();
+        int startingCol = clue.getCol();
+        boolean isHorizontal = clue.getOrientation() == 'h';
+
         for (int i = 0; i < clue.getRealAnswer().length(); i++)
         {
-            int currentRow = (clue.getOrientation() == 'v') ? clue.getRow() + i : clue.getRow();
-            int currentCol = (clue.getOrientation() == 'h') ? clue.getCol() + i : clue.getCol();
+            int row = startingRow + (isHorizontal ? 0 : i);
+            int col = startingCol + (isHorizontal ? i : 0);
 
             boolean hasIntersection;
 
-            if (clue.getOrientation() == 'v')
+            if (isHorizontal)
             {
-                hasIntersection = (currentCol > 0 && Character.isLetter(board[currentRow][currentCol - 1].getContent())) ||
-                                  (currentCol < board[0].length - 1 && Character.isLetter(board[currentRow][currentCol + 1].getContent()));
+                hasIntersection = (row > 0 && Character.isLetter(board[row - 1][col].getContent())) ||
+                                  (row < board.length - 1 && Character.isLetter(board[row + 1][col].getContent()));
             }
             else
             {
-                hasIntersection = (currentRow > 0 && Character.isLetter(board[currentRow - 1][currentCol].getContent())) ||
-                                  (currentRow < board.length - 1 && Character.isLetter(board[currentRow + 1][currentCol].getContent()));
+                hasIntersection = (col > 0 && Character.isLetter(board[row][col - 1].getContent())) ||
+                                  (col < board[0].length - 1 && Character.isLetter(board[row][col + 1].getContent()));
             }
 
             if (!hasIntersection)
             {
                 char content = (i == 0) ? Character.forDigit(clue.getNumber(), 10) : Square.EMPTY_SQUARE;
-                board[currentRow][currentCol].setContent(content);
+                board[row][col].setContent(content);
             }
         }
     }
@@ -113,7 +117,6 @@ public class Crossword
                 return false;
             }
         }
-
         return true;
     }
 }

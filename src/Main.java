@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static java.lang.System.exit;
-
 public class Main
 {
     public static void main(String[] args)
@@ -19,9 +17,10 @@ public class Main
         while (true)
         {
             System.out.println("========================");
-            int selection = getSelection(userInput);
-
-            switch (selection) {
+            int selection = getMenuSelection(userInput);
+            boolean puzzleSuccess = false;
+            switch (selection)
+            {
                 case 1:
                     displayAllClues(clues);
                     break;
@@ -35,66 +34,59 @@ public class Main
                     eraseAnAnswer(userInput, clues, crossword);
                     break;
                 case 5:
-                    submitPuzzle(crossword);
+                    puzzleSuccess = submitPuzzle(crossword);
                     break;
                 case 6:
                     System.exit(0);
                     break;
             }
-        }
 
-    }
-
-    private static void submitPuzzle(Crossword crossword)
-    {
-        if (crossword.checkPuzzle())
-        {
-            System.out.println("Puzzle solved!");
-        }
-        else
-        {
-            System.out.println("Something isn't quite right!");
+            if (puzzleSuccess)
+                break;
         }
     }
 
-    private static void fillAllAnswers(Crossword crossword, ArrayList<Clue> clues)
+    private static void displayAllClues(ArrayList<Clue> clues)
     {
-        for (int i = 1; i < clues.size(); i++)
+        System.out.println("Horizontal");
+        System.out.println("----------");
+
+        for (Clue clue : clues)
         {
-            clues.get(i).setSubmittedAnswer(clues.get(i).getRealAnswer());
-            crossword.trySetAnswer(clues.get(i));
+            if (clue.getOrientation() == 'h')
+                System.out.println(clue.getNumber() + ". " + clue.getClue());
+        }
+
+        System.out.println();
+
+        System.out.println("Vertical");
+        System.out.println("--------");
+
+        for (Clue clue : clues)
+        {
+            if (clue.getOrientation() == 'v')
+                System.out.println(clue.getNumber() + ". " + clue.getClue());
         }
     }
-
-    private static void eraseAnAnswer(Scanner userInput, ArrayList<Clue> clues, Crossword crossword)
+    private static void displaySpecificClue(Scanner userInput, ArrayList<Clue> clues)
     {
-        displayAllClues(clues);
+        String input;
 
-        System.out.println("\nWhich answer would you like to erase? (i.e. 1h or 3v)");
-        String input = userInput.nextLine();
+        System.out.println("Which clue?(i.e. 1h or 3v");
+        input = userInput.nextLine();
 
-        String possibleNumber = input.substring(0, input.length() - 1);
-        char possibleChar = input.charAt(input.length() - 1);
+        if (!isValidClueSelection(input)) return;
 
-        if (!isValidNumber(possibleNumber)) return;
-        int number = Integer.parseInt(possibleNumber);
-
-        if (!isValidChar(possibleChar)) return;
-        char orientation = Character.toLowerCase(possibleChar);
+        // Split clue input into 2 tokens
+        int number = Integer.parseInt(String.valueOf(input.charAt(0)));
+        char orientation = Character.toLowerCase(input.charAt(1));
 
         Clue clue = getClue(number, orientation, clues);
-        if (clue != null)
-        {
-            crossword.eraseAnswer(clue);
-            clue.setSubmittedAnswer("");
-            crossword.displayBoard();
-        }
-        else
-        {
+        if (clue == null)
             System.out.println("Clue " + input + " not found.");
-        }
+        else
+            System.out.println(clue.getNumber() + ". " + clue.getClue());
     }
-
     private static void answerAClue(Scanner userInput, ArrayList<Clue> clues, Crossword crossword)
     {
         displayAllClues(clues);
@@ -102,14 +94,11 @@ public class Main
         System.out.println("\nWhich clue would you like to answer? (i.e. 1h or 3v)");
         String input = userInput.nextLine();
 
-        String possibleNumber = input.substring(0, input.length() - 1);
-        char possibleChar = input.charAt(input.length() - 1);
+        if (!isValidClueSelection(input)) return;
 
-        if (!isValidNumber(possibleNumber)) return;
-        int number = Integer.parseInt(possibleNumber);
-
-        if (!isValidChar(possibleChar)) return;
-        char orientation = Character.toLowerCase(possibleChar);
+        // Split clue input into 2 tokens
+        int number = Integer.parseInt(String.valueOf(input.charAt(0)));
+        char orientation = Character.toLowerCase(input.charAt(1));
 
         Clue clue = getClue(number, orientation, clues);
         if (clue != null)
@@ -135,72 +124,89 @@ public class Main
             System.out.println("Clue " + input + " not found.");
         }
     }
-
-    private static void displaySpecificClue(Scanner userInput, ArrayList<Clue> clues)
+    private static void eraseAnAnswer(Scanner userInput, ArrayList<Clue> clues, Crossword crossword)
     {
-        String input;
+        displayAllClues(clues);
 
-        System.out.println("Which clue?(i.e. 1h or 3v");
-        input = userInput.nextLine();
+        System.out.println("\nWhich answer would you like to erase? (i.e. 1h or 3v)");
+        String input = userInput.nextLine();
 
-        String possibleNumber = input.substring(0, input.length() - 1);
-        char possibleChar = input.charAt(input.length() - 1);
+        if (!isValidClueSelection(input)) return;
 
-        if (!isValidNumber(possibleNumber)) return;
-        int number = Integer.parseInt(possibleNumber);
-
-        if (!isValidChar(possibleChar)) return;
-        char orientation = Character.toLowerCase(possibleChar);
+        // Split clue input into 2 tokens
+        int number = Integer.parseInt(String.valueOf(input.charAt(0)));
+        char orientation = Character.toLowerCase(input.charAt(1));
 
         Clue clue = getClue(number, orientation, clues);
-        if (clue == null)
-            System.out.println("Clue " + input + " not found.");
+        if (clue != null)
+        {
+            crossword.eraseAnswer(clue);
+            clue.setSubmittedAnswer("");
+            crossword.displayBoard();
+        }
         else
-            System.out.println(clue.getNumber() + ". " + clue.getClue());
-    }
-    private static void displayAllClues(ArrayList<Clue> clues)
-    {
-        System.out.println("Horizontal");
-        System.out.println("----------");
-
-        for (Clue clue : clues)
         {
-            if (clue.getOrientation() == 'h')
-                System.out.println(clue.getNumber() + ". " + clue.getClue());
+            System.out.println("Clue " + input + " not found.");
         }
-
-        System.out.println();
-
-        System.out.println("Vertical");
-        System.out.println("--------");
-
-        for (Clue clue : clues)
+    }
+    private static boolean submitPuzzle(Crossword crossword)
+    {
+        if (crossword.checkPuzzle())
         {
-            if (clue.getOrientation() == 'v')
-                System.out.println(clue.getNumber() + ". " + clue.getClue());
+            System.out.println("Puzzle solved!");
+            return true;
+        }
+        else
+        {
+            System.out.println("Something isn't quite right!");
+            return false;
         }
     }
 
-    private static int getSelection(Scanner userInput)
+    private static int getMenuSelection(Scanner userInput)
     {
-        int selection;
+        int selection = 0;
         do {
             System.out.println("1. Display All Clues.");
-            System.out.println("2. Display Specifc Clue.");
+            System.out.println("2. Display Specific Clue.");
             System.out.println("3. Answer a Clue.");
             System.out.println("4. Erase an Answer.");
             System.out.println("5. Submit Puzzle.");
             System.out.println("6. Exit.");
 
-            selection = userInput.nextInt();
+            String selectionStr = userInput.nextLine();
+            if (isValidNumber(selectionStr))
+                selection = Integer.parseInt(selectionStr);
         }
         while(selection <= 0 || selection >= 7);
 
-        userInput.nextLine();
         return selection;
     }
+    private static Clue getClue(int number, char orientation, ArrayList<Clue> clues)
+    {
+        for (Clue clue : clues)
+        {
+            if (clue.getNumber() == number && clue.getOrientation() == orientation)
+            {
+                return clue;
+            }
+        }
+        return null;
+    }
+    private static boolean isValidClueSelection(String input)
+    {
+        if (input.isEmpty() || input.length() > 2)
+        {
+            System.out.println("Format must follow '1h' or '3v'");
+            return false;
+        }
 
+        String possibleNumber = String.valueOf(input.charAt(0));
+        char possibleChar = input.charAt(input.length() - 1);
 
+        if (!isValidNumber(possibleNumber)) return false;
+        return isValidChar(possibleChar);
+    }
     private static boolean isValidNumber(String str)
     {
         try {
@@ -223,15 +229,13 @@ public class Main
         System.out.println("Must enter 'v' or 'h'");
         return false;
     }
-    private static Clue getClue(int number, char orientation, ArrayList<Clue> clues)
+
+    private static void fillAllAnswers(Crossword crossword, ArrayList<Clue> clues)
     {
-        for (Clue clue : clues)
+        for (int i = 1; i < clues.size(); i++)
         {
-            if (clue.getNumber() == number && clue.getOrientation() == orientation)
-            {
-                return clue;
-            }
+            clues.get(i).setSubmittedAnswer(clues.get(i).getRealAnswer());
+            crossword.trySetAnswer(clues.get(i));
         }
-        return null;
     }
 }
