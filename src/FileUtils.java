@@ -31,12 +31,12 @@ public class FileUtils
                     continue;
                 }
 
-                int row          = Integer.parseInt(parts[0].trim().toLowerCase());
-                int col          = Integer.parseInt(parts[1].trim().toLowerCase());
+                int row          = Integer.parseInt(parts[0].trim());
+                int col          = Integer.parseInt(parts[1].trim());
                 char orientation = parts[2].trim().charAt(0);
                 int number       = Integer.parseInt(parts[3].trim());
-                String answer    = parts[4].trim();
-                String clueText  = parts[5].trim();
+                String answer    = parts[4].trim().toLowerCase();
+                String clueText  = parts[5].trim().toLowerCase();
 
                 Clue clue = new Clue(row, col, number, orientation, clueText, answer);
                 clues.add(clue);

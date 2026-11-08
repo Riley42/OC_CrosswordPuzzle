@@ -19,6 +19,7 @@ public class Main
             System.out.println("========================");
             int selection = getMenuSelection(userInput);
             boolean puzzleSuccess = false;
+
             switch (selection)
             {
                 case 1:
